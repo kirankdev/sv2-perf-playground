@@ -46,7 +46,6 @@ async function executeFlow() {
 			// set runtime params
 			const srcDpaIds = {
 				sandbox: '2360e9a2-17a7-4766-b08a-a3aef372c643',
-				stage: 'b756a2b0-ef62-4c62-a6de-f72e75ce5f17',
 				prod: '6441fbba-9602-4522-8ac6-bf12d1edc91a'
 			}
 			params[0].cardBrands = perfConfig.cardBrands

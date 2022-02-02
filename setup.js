@@ -33,7 +33,6 @@ const initParams = {
 const config = {
 	envs: {
 		sandbox: 'https://sandbox.src.mastercard.com/srci/integration/2/lib.js',
-		stage: 'https://stage.src.mastercard.com/srci/integration/2/lib.js',
 		prod: 'https://src.mastercard.com/srci/integration/2/lib.js'
 	},
 	env: null,
