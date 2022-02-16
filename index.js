@@ -30,7 +30,7 @@ function updateEnv(env, reload = true) {
   }
   ENV = typeof env === 'string' ? env : env.target.value
 
-  if(reload) {
+  if (reload) {
     // choice persistence logic
     window.localStorage.setItem('env', ENV)
     window.location.reload()
@@ -39,11 +39,11 @@ function updateEnv(env, reload = true) {
   if (ENV === 'reset') {
     buttons.style.visibility = 'hidden'
   }
-  else{
+  else {
     document.getElementById('env-selector').selectedIndex = ENV === 'sandbox' ? 1 : 2
     buttons.style.visibility = 'visible'
   }
-  
+
   window.perf = public
 }
 
@@ -179,12 +179,13 @@ function captureSdkPerfMetrics() {
       if (type === 'trace' && paylaodType === 'storing method result:') {
         srcSdks.push(data)
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
+let allResults = ['[']
 function drawOptions() {
-	const result = document.querySelector('#result')
+  const result = document.querySelector('#result')
   Object.entries(window.perfConfig.flows).forEach(([flowName, flow]) => {
     const div = document.createElement('div')
     const button = document.createElement('button')
@@ -193,12 +194,17 @@ function drawOptions() {
       window.perf.start(ENV, flowName).then((results) => {
         let pre = {}
         const regionElm = document.getElementById('region')
-        if(regionElm.value){
+        if (regionElm.value) {
           pre.region = regionElm.value
         }
-        results = {...pre, ...{flowName}, ...JSON.parse(results)}
-        // results = `${flowName}\n${results}` 
-				result.innerText=JSON.stringify(results, null, ' ')
+        if (allResults.length > 1) {
+          allResults.push(',')
+        }
+        results = { ...pre, ...{ flowName }, ...{ environment: document.getElementById('env-selector').value }, ...JSON.parse(results) }
+        allResults.push(JSON.stringify(results, null, ' '))
+        document.getElementById('download').disabled = false;
+
+        result.innerText = JSON.stringify(results, null, ' ')
         navigator.clipboard.writeText(results)
       })
     })
@@ -206,3 +212,29 @@ function drawOptions() {
     div.appendChild(button)
   })
 }
+
+
+(function downloadResultsToCSV() {
+  const downloadElm = document.getElementById('download')
+  downloadElm.addEventListener('click', () => {
+    if (allResults.length > 1) {
+      var downloadLink = document.createElement('a');
+      allResults.push(']')
+      var blob = new Blob(allResults, { type: 'text/json' });
+      var url = URL.createObjectURL(blob);
+      downloadLink.href = url;
+      downloadLink.download = "data.json";
+
+      document.body.appendChild(downloadLink)
+      downloadLink.click();
+      document.body.removeChild(downloadLink)
+      allResults = ['['];
+      document.getElementById('download').disabled = true;
+
+    }
+    else {
+      alert('No data to download')
+    }
+  })
+
+})();
