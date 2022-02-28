@@ -201,6 +201,15 @@ function drawOptions() {
           allResults.push(',')
         }
         results = { ...pre, ...{ flowName }, ...{ environment: document.getElementById('env-selector').value }, ...JSON.parse(results) }
+        
+        const perfEntries = window.performance.getEntries().filter(entry => entry.initiatorType === 'iframe' || entry.initiatorType === 'script') 
+
+        perfEntries.forEach(entry => {
+          if (results.loadTimes[entry.name]) {
+            results.loadTimes[entry.name].duration = entry.duration.toFixed(2)
+          }
+        })
+
         allResults.push(JSON.stringify(results, null, ' '))
         document.getElementById('download').disabled = false;
 
